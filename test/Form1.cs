@@ -355,7 +355,7 @@ namespace test
 
             Serializer.Save<List<Profile>>(ProfileList, _ss);
         }
-
+        //писька петра
         [Serializable]
         public class Profile
         {
