@@ -55,16 +55,7 @@ namespace test
             count = Convert.ToInt32(GetSetting(xRoot, "N"));
             count1 = Convert.ToInt32(GetSetting(xRoot, "c"));
             //  label13.Text = "№ Ивентаризации:" + count.ToString() + "    Пользователь: " + WindowsIdentity.GetCurrent().Name; ;
-            if (count != count1)
-            {
-                read();
-                MessageBox.Show("Незаконченная инвентаризация: "+count);
-                label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
-                label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
-                label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
-                zapros.Enabled = false;
-                label13.Text = "№ Ивентаризации:" + count.ToString() + "    Пользователь: " + WindowsIdentity.GetCurrent().Name;
-            }
+          
            
         }
         // Читаем xml-ку.
@@ -271,15 +262,15 @@ namespace test
         {
             
             count++;//при созданиинового запроса на инвентаризацию +1
-
+            startServer();
             // doc.Save("link/Setting_Server.xml");
             SaveSettings();
             // numcount.Text = counter.ToString();//вывод на форму номер запроса инвентаризации
-            label13.Text = "№ Ивентаризации:" + count.ToString() + "    Пользователь: " + WindowsIdentity.GetCurrent().Name; ;
+            label13.Text = "№ Ивентаризации: " + count.ToString() + ": Пользователь: " + WindowsIdentity.GetCurrent().Name; 
            UploadProductsListFromDB(); // Выгрузка списка продуктов в таблицу
           // dataGridView1.Rows[0].DefaultCellStyle.BackColor = Color.GreenYellow;
             zapros.Enabled = false;
-
+            txtTalk.AppendText("----Создан запрос на инвентаризацию №: "+count +" " + label1.Text + ": Пользователь: " + WindowsIdentity.GetCurrent().Name+"----");
         }
         public string w ="";
         public string _s1 = "link/Profiles.xml";
@@ -334,13 +325,8 @@ namespace test
                 //if (_row.Cells[1].Value != null)
                 p.Synonym_ID = Convert.ToString(_row.Cells[1].Value);
 
-
                 p.id_Pallet = Convert.ToString(_row.Cells[2].Value);
-                
-
-
-
-
+          
              //   if (_row.Cells[3].Value != null)
                     p.Position_ID = Convert.ToString(_row.Cells[3].Value);
                 //   if (_row.Cells[4].Value != null)
@@ -421,7 +407,28 @@ namespace test
             }
         }
 
+        public void startServer()
+        {
+            /*Start listener and kick to new thread to free the UI*/
+            tcpListener = new TcpListener(IPAddress.Any, int.Parse(label10.Text));
+            listenThread = new Thread(new ThreadStart(ListenForClients));
+            listenThread.Start();
+            this.Invoke((MethodInvoker)delegate
+            {
+                //This unnamed delegate is used to access UI elements on the main thread
+                txtTalk.AppendText("\rServer started...Listening for clients...\r\n");
+            });
+            btStartServer.Enabled = false; btStopServer.Enabled = true;
+        }
+        public void stopServer()
+        {
+            /*Stops the server
+        Note that because stop() will cause the listener to terminate with an exception (see above)
+        any code after this statement in this event handler will be skipped*/
+            tcpListener.Stop(); btStartServer.Enabled = true; btStopServer.Enabled = false;
+            /*DON'T PUT ANYTHING HERE, NEVER EXECUTES*/
 
+        }
         private void btStartServer_Click(object sender, EventArgs e)
         {
             /*Start listener and kick to new thread to free the UI*/
@@ -467,7 +474,8 @@ namespace test
             {
                 this.Invoke((MethodInvoker)delegate
                 {
-                    txtTalk.AppendText("Server stopped\r\n");
+                    txtTalk.AppendText("Server stopped\r");
+                    txtTalk.AppendText("----Инвентаризация №:" + count1 + " завершина----");
                 });
             }
         }
@@ -508,40 +516,46 @@ namespace test
 
                     //textBox4.Clear();
                     //textBox4.AppendText(" Получено: " + encoder.GetString(bytes, 0, bytesRead) + "\r\n" + dataGridView2.Rows.Count + "\r\n" + counter.ToString() + "\r\n");
-                    txtTalk.AppendText("Получено:" + encoder.GetString(bytes, 0, bytesRead));
+                   
                     if (encoder.GetString(bytes, 0, bytesRead) == s1)
                     {
+                        
                         //MessageBox.Show("№");
                         u = s1+ "," + count.ToString() + "," + label1.Text;
                         byte[] data1 = Encoding.Unicode.GetBytes(u);
                         clientStream.Write(data1, 0, data1.Length);
-                        txtTalk.AppendText(" номер инвентаризации ");
+                       txtTalk.AppendText("-->Принял номер инвентаризации:"+count);
                     }
                     else if (encoder.GetString(bytes, 0, bytesRead) == s2)
                     {
-                        count1 = count; 
+                       
+                        count1 = count;
+                      
                         u = s2+"," + count1.ToString() ;
                         byte[] data1 = Encoding.Unicode.GetBytes(u);
                         clientStream.Write(data1, 0, data1.Length);
                         save();
                         cleralist();
-                        
-                        
                         SaveSettings();
+                        stopServer();
+                        //txtTalk.AppendText("----Инвентаризация №:" + count1+" завершина----");
                         zapros.Enabled = true;
                         count_green = 0;
                         count_red = 0;
-
+                        label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
+                        label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
+                        label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
                     }
                     else {
+                        txtTalk.AppendText("<--Получено:" + encoder.GetString(bytes, 0, bytesRead));
                         seregja = label6.Text;
                         label12.Text = seregja;
                         label6.ResetText();//.Clear();
                         label6.Text = (encoder.GetString(bytes, 0, bytesRead));
-                        if (seregja == label6.Text)
-                        {
-                            txtTalk.AppendText("уже был ");
-                        }
+                        //if (seregja == label6.Text)
+                        //{
+                        //    txtTalk.AppendText("уже был ");
+                        //}
 
                         //});
                         try
@@ -619,7 +633,7 @@ namespace test
                                 u = "ДА" + "," + label6.Text + "," + count_green + "," + count_red+","+count;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
-                                txtTalk.AppendText(" Отправлено: Паллет в списке. ");
+                                txtTalk.AppendText("-->Отправлено: Паллет в списке_ "+"из: "+count_green);
 
                             }
                             else
@@ -636,7 +650,7 @@ namespace test
                                 u = "НЕТ" + "," + label6.Text + "," + count_green + "," + count_red + "," + count;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
-                                txtTalk.AppendText(" Отправлено: Паллет не в списке. ");
+                                txtTalk.AppendText("-->Отправлено: Паллет не в списке_ " + "из: " + count_red);
                             }
 
 
@@ -647,7 +661,7 @@ namespace test
                         }
                         catch (Exception ex)
                         {
-                            txtTalk.AppendText("ERROR: " + ex.Message + "\r\n");
+                            txtTalk.AppendText("_ERROR: " + ex.Message + "\r\n");
                             //    break;
                         }
 
@@ -664,7 +678,7 @@ namespace test
             this.Invoke((MethodInvoker)delegate
             { clientStream.Close();
                 tcpClient.Close();
-                txtTalk.AppendText("Client disconnected\r\n");
+                txtTalk.AppendText(" _Client disconnected");
             });
         }
         
@@ -701,11 +715,10 @@ namespace test
         }
         public void read()
         {
-        
-             Read_Click(dataGridView1, _s1);
-             Read_Click(dataGridView2, _s2);
+           
+            Read_Click(dataGridView1, _s1);
+            Read_Click(dataGridView2, _s2);
      
-
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -721,6 +734,29 @@ namespace test
                 Read_Click(dataGridView1, _s1);
                 Read_Click(dataGridView2, _s2);
             //});
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            save_Click(dataGridView1, _s1);
+            save_Click(dataGridView2, _s2);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (count != count1)
+            {
+                read();
+                MessageBox.Show("Незаконченная инвентаризация: " + count);
+                label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
+                label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
+                label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
+                zapros.Enabled = false;
+                label13.Text = "№ Ивентаризации:" + count.ToString() + " Пользователь: " + WindowsIdentity.GetCurrent().Name;
+                startServer();
+                txtTalk.AppendText("----Незаконченная инвентариязация №: " + count + "___" + label1.Text);
+
+            }
         }
     }
 }
