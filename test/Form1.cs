@@ -18,26 +18,31 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XmlConfiguration;
+using Microsoft.Office.Interop;
+using System.Runtime.InteropServices;
 
 namespace test
 {
     public partial class Form1 : Form
     {
+        string fileName = @"Logs\error.txt";
+        string l1 = "LogServer.txt";
+        string f1 = @"Logs\LogServer.txt";
         XmlElement xRoot;
         XmlDocument xDoc = new XmlDocument();
-        string id;
+     
         int count = 0;//счётчик номера инвентаризации
         int count1 = 0;//счётчик номера закрытия инвентаризации
         private TcpListener tcpListener;
         private Thread listenThread;
         public string seregja = "";
-        string connectionString =
+        //string connectionString =
 
-                    "Provider=SQLOLEDB;"
-                + "Data Source=MBN01_sfkdb01;"
-                + "Initial Catalog=TambovSFKPlant;"
-                + "User Id=ASUTPsqlUserR;"
-                + "Password =Asutp2016ROnly;";
+        //            "Provider=SQLOLEDB;"
+        //        + "Data Source=MBN01_sfkdb01;"
+        //        + "Initial Catalog=TambovSFKPlant;"
+        //        + "User Id=ASUTPsqlUserR;"
+        //        + "Password =Asutp2016ROnly;";
         DataSet ds = new DataSet(); XmlDocument doc = new XmlDocument();
         public Form1()
         {
@@ -119,7 +124,7 @@ namespace test
             xDoc.Save(directory + "/link/settings.xml");
         }
 
-        public List<string[]> data1;
+        public List<string[]> data;
       
         public void UploadProductsListFromDB() // Выгрузка списка продуктов в таблицу
         {
@@ -205,26 +210,26 @@ namespace test
                     SqlDataReader reader = command.ExecuteReader();
                     //  List<string[]> data1 = new List<string[]>();
                     //List<string[]> data = new List<string[]>();
-                    data1 = new List<string[]>();
+                    data = new List<string[]>();
                     //data1.Clear();
                     while (reader.Read())
                     {
-                        data1.Add(new string[7]);
+                        data.Add(new string[7]);
 
-                        data1[data1.Count - 1][0] = reader[0].ToString();
-                        data1[data1.Count - 1][1] = reader[1].ToString();
-                        data1[data1.Count - 1][2] = reader[2].ToString();
-                        data1[data1.Count - 1][3] = reader[3].ToString();
-                        data1[data1.Count - 1][4] = reader[4].ToString();
-                        data1[data1.Count - 1][5] = reader[5].ToString();
-                        data1[data1.Count - 1][6] = reader[6].ToString();
+                        data[data.Count - 1][0] = reader[0].ToString();
+                        data[data.Count - 1][1] = reader[1].ToString();
+                        data[data.Count - 1][2] = reader[2].ToString();
+                        data[data.Count - 1][3] = reader[3].ToString();
+                        data[data.Count - 1][4] = reader[4].ToString();
+                        data[data.Count - 1][5] = reader[5].ToString();
+                        data[data.Count - 1][6] = reader[6].ToString();
                     }
 
                     reader.Close();
 
                     myConnection.Close();
 
-                    foreach (string[] s in data1)
+                    foreach (string[] s in data)
                         dataGridView1.Rows.Add(s);
                 }
                 //dataGridView2.Columns.Add("description", "Имя синонима");
@@ -244,12 +249,12 @@ namespace test
 
         public void cleralist()
         {
-            if (data1 == null)
+            if (data == null)
             {
                 dataGridView1.Rows.Clear();
                 dataGridView2.Rows.Clear();
             }
-            else { data1.Clear(); dataGridView1.Rows.Clear();
+            else { data.Clear(); dataGridView1.Rows.Clear();
                 dataGridView2.Rows.Clear();
             }
            
@@ -270,7 +275,9 @@ namespace test
            UploadProductsListFromDB(); // Выгрузка списка продуктов в таблицу
           // dataGridView1.Rows[0].DefaultCellStyle.BackColor = Color.GreenYellow;
             zapros.Enabled = false;
-            txtTalk.AppendText("----Создан запрос на инвентаризацию №: "+count +" " + label1.Text + ": Пользователь: " + WindowsIdentity.GetCurrent().Name+"----");
+            PrintTerminal(String.Format("----Создан запрос на инвентаризацию №: " + count + " " + label1.Text + ": Пользователь: " + WindowsIdentity.GetCurrent().Name + "----"));
+
+           // txtTalk.AppendText("----Создан запрос на инвентаризацию №: "+count +" " + label1.Text + ": Пользователь: " + WindowsIdentity.GetCurrent().Name+"----");
         }
         public string w ="";
         public string _s1 = "link/Profiles.xml";
@@ -415,8 +422,11 @@ namespace test
             listenThread.Start();
             this.Invoke((MethodInvoker)delegate
             {
+               
                 //This unnamed delegate is used to access UI elements on the main thread
-                txtTalk.AppendText("\rServer started...Listening for clients...\r\n");
+                PrintTerminal(String.Format("\rServer started...Listening for clients...\r\n"));
+
+              //  txtTalk.AppendText("\rServer started...Listening for clients...\r\n");
             });
             btStartServer.Enabled = false; btStopServer.Enabled = true;
         }
@@ -438,11 +448,12 @@ namespace test
             this.Invoke((MethodInvoker)delegate
             {
                 //This unnamed delegate is used to access UI elements on the main thread
-                txtTalk.AppendText("Server started...Listening for clients...\r\n");
+                PrintTerminal(String.Format("Server started...Listening for clients...\r\n"));
+               
+               // txtTalk.AppendText("Server started...Listening for clients...\r\n");
             });
             btStartServer.Enabled = false; btStopServer.Enabled = true;
         }
-
         private void ListenForClients()
         {
             /*Listner thread for connections, runs indefinitely until server stopped
@@ -460,7 +471,9 @@ namespace test
 
                     this.Invoke((MethodInvoker)delegate
                     {
-                        txtTalk.AppendText("\r\nClient connected: ");
+                        PrintTerminal(String.Format("\r\nClient connected: "));
+                       
+                    //    txtTalk.AppendText("\r\nClient connected: ");
 
                     });
                 }
@@ -474,8 +487,11 @@ namespace test
             {
                 this.Invoke((MethodInvoker)delegate
                 {
-                    txtTalk.AppendText("Server stopped\r");
-                    txtTalk.AppendText("----Инвентаризация №:" + count1 + " завершина----");
+                   
+                    PrintTerminal(String.Format("Server stopped\r"));
+                    PrintTerminal(String.Format("----Инвентаризация №:" + count1 + " завершина----"));
+                  //  txtTalk.AppendText("Server stopped\r");
+                   // txtTalk.AppendText("----Инвентаризация №:" + count1 + " завершина----");
                 });
             }
         }
@@ -524,7 +540,9 @@ namespace test
                         u = s1+ "," + count.ToString() + "," + label1.Text;
                         byte[] data1 = Encoding.Unicode.GetBytes(u);
                         clientStream.Write(data1, 0, data1.Length);
-                       txtTalk.AppendText("-->Принял номер инвентаризации:"+count);
+                       
+                        PrintTerminal(String.Format("-->Принял номер инвентаризации:" + count));
+                       // txtTalk.AppendText("-->Принял номер инвентаризации:"+count);
                     }
                     else if (encoder.GetString(bytes, 0, bytesRead) == s2)
                     {
@@ -547,7 +565,9 @@ namespace test
                         label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
                     }
                     else {
-                        txtTalk.AppendText("<--Получено:" + encoder.GetString(bytes, 0, bytesRead));
+                       
+                        PrintTerminal(String.Format("<--Получено:" + encoder.GetString(bytes, 0, bytesRead)));
+                       // txtTalk.AppendText("<--Получено:" + encoder.GetString(bytes, 0, bytesRead));
                         seregja = label6.Text;
                         label12.Text = seregja;
                         label6.ResetText();//.Clear();
@@ -633,8 +653,9 @@ namespace test
                                 u = "ДА" + "," + label6.Text + "," + count_green + "," + count_red+","+count;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
-                                txtTalk.AppendText("-->Отправлено: Паллет в списке_ "+"из: "+count_green);
-
+                               // txtTalk.AppendText("-->Отправлено: Паллет в списке_ "+"из: "+count_green);
+                                PrintTerminal(String.Format("-->Отправлено: Паллет в списке_ " + "из: " + count_green));
+                               
                             }
                             else
                             {
@@ -650,7 +671,9 @@ namespace test
                                 u = "НЕТ" + "," + label6.Text + "," + count_green + "," + count_red + "," + count;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
-                                txtTalk.AppendText("-->Отправлено: Паллет не в списке_ " + "из: " + count_red);
+                             //   txtTalk.AppendText("-->Отправлено: Паллет не в списке_ " + "из: " + count_red);
+                                PrintTerminal(String.Format("-->Отправлено: Паллет не в списке_ " + "из: " + count_red));
+                              
                             }
 
 
@@ -661,7 +684,9 @@ namespace test
                         }
                         catch (Exception ex)
                         {
-                            txtTalk.AppendText("_ERROR: " + ex.Message + "\r\n");
+                            PrintTerminal(String.Format("_ERROR: " + ex.Message + "\r\n"));
+                       
+                          //  txtTalk.AppendText("_ERROR: " + ex.Message + "\r\n");
                             //    break;
                         }
 
@@ -678,12 +703,25 @@ namespace test
             this.Invoke((MethodInvoker)delegate
             { clientStream.Close();
                 tcpClient.Close();
-                txtTalk.AppendText(" _Client disconnected");
+                PrintTerminal(String.Format(" _Client disconnected"));
+               
+               // txtTalk.AppendText(" _Client disconnected");
             });
         }
         
         private void log_Click(object sender, EventArgs e)
         {
+       fileName = f1;
+           
+            if (File.Exists(fileName) != true)
+            {  //проверяем есть ли такой файл, если его нет, то создаем
+                using (StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.Create, FileAccess.Write)))
+                {
+                    sw.Flush();// Освобождение потока// sw.WriteLine("gtrgrtg");             //пишем строчку, или пишем что хотим
+                }
+            }
+       txtTalk.Text = File.ReadAllText(fileName); //чтение айла
+                                                      //чтение всех строк файла в массив строк
             tableLayoutPanel2.Visible = false;
             tableLayoutPanel3.Visible = false;
             panel2.Dock = DockStyle.Fill;
@@ -722,6 +760,7 @@ namespace test
         }
         private void button3_Click(object sender, EventArgs e)
         {
+            WriteToXlsx();
             save_Click(dataGridView1, _s1);
             save_Click(dataGridView2,_s2);
         }
@@ -754,10 +793,99 @@ namespace test
                 zapros.Enabled = false;
                 label13.Text = "№ Ивентаризации:" + count.ToString() + " Пользователь: " + WindowsIdentity.GetCurrent().Name;
                 startServer();
-                txtTalk.AppendText("----Незаконченная инвентариязация №: " + count + "___" + label1.Text);
-
+              //  txtTalk.AppendText("----Незаконченная инвентариязация №: " + count + "___" + label1.Text);
+                PrintTerminal(String.Format("----Незаконченная инвентариязация №: " + count + "___" + label1.Text));
+               
             }
         }
+
+        public void PrintTerminal(string _text) // Логгирование
+        {
+
+
+            string directory = Directory.GetCurrentDirectory().ToString(); // Вычисляем дикерторию EXE`шника
+
+            if (!Directory.Exists(directory + "\\Logs\\")) // Если рядом с EXE`шником нет папки Logs
+            {
+                Directory.CreateDirectory(directory + "\\Logs\\"); // Создаем ее
+            }
+            
+            //// Добавление строки в лог-файл -----------------------------------------------------------------
+            string newstr = "[" + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + "]" + _text;
+            using (StreamWriter sw = new StreamWriter(directory + "\\Logs\\" + l1, true))// Имя и директория файла
+
+            {
+                (sw.BaseStream).Seek(0, SeekOrigin.End);         //идем в конец файла и пишем строку или пишем то, что хотим
+                sw.WriteLine(newstr);// Строка
+
+            }
+
+
+        }
+        double  M = 0;
+        // Не используется.
+        private void WriteToXlsx()
+        {
+            Microsoft.Office.Interop.Excel.Application ExcelApp = new Microsoft.Office.Interop.Excel.Application();
+
+            if (ExcelApp == null)
+            {
+                MessageBox.Show("Excel не установлен!");
+                return;
+            }
+
+            Microsoft.Office.Interop.Excel.Workbook ExcelWorkBook;
+            Microsoft.Office.Interop.Excel.Worksheet ExcelWorkSheet;
+            ExcelWorkBook = ExcelApp.Workbooks.Add(System.Reflection.Missing.Value);
+            ExcelWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)ExcelWorkBook.Worksheets.get_Item(1);
+            for (int i = 1; i < dataGridView2.Columns.Count + 1; i++)
+            {
+                ExcelWorkSheet.Cells[1, i] = dataGridView2.Columns[i - 1].HeaderText;
+            }
+            for (int i = 0; i < dataGridView2.Rows.Count; i++)
+            {
+                for (int j = 0; j < dataGridView2.Columns.Count; j++)
+                {
+                    if (j == 3 || j == 4)
+                    {
+                        M = Convert.ToDouble(dataGridView2.Rows[i].Cells[j].Value);
+                        ExcelWorkSheet.Cells[i + 2, j + 1] = M;
+                    }
+                    else if (j == 14)
+                    {
+                        M = Convert.ToDouble(dataGridView2.Rows[i].Cells[j].Value);
+                        ExcelWorkSheet.Cells[i + 2, j + 1] = M;
+                    }
+                    else
+                        ExcelWorkSheet.Cells[i + 2, j + 1] = dataGridView2.Rows[i].Cells[j].Value.ToString();
+                }
+            }
+
+            ExcelWorkSheet.get_Range("A1", "S1").Interior.Color = Color.LightGray;
+            ExcelWorkSheet.get_Range("A1", "C1").EntireColumn.ColumnWidth = 30;
+            ExcelWorkSheet.get_Range("D1", "E1").EntireColumn.ColumnWidth = 18;
+            ExcelWorkSheet.get_Range("F1", "F1").EntireColumn.ColumnWidth = 15;
+            ExcelWorkSheet.get_Range("G1", "I1").EntireColumn.ColumnWidth = 18;
+            ExcelWorkSheet.get_Range("J1", "L1").EntireColumn.ColumnWidth = 15;
+            ExcelWorkSheet.get_Range("M1", "R1").EntireColumn.ColumnWidth = 18;
+            ExcelWorkSheet.get_Range("S1", "S1").EntireColumn.ColumnWidth = 21;
+            ExcelWorkSheet.get_Range("A1", "S1").Font.Bold = true;
+            ExcelWorkSheet.get_Range("A1", "S1").HorizontalAlignment = Microsoft.Office.Interop.Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A1", "S1").Borders.Color = System.Drawing.Color.Black.ToArgb();
+            ExcelApp.Visible = true;
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            WriteToXlsx();
+        }
+
+        [DllImport("user32.dll")]
+        static extern int GetWindowThreadProcessId(int hWnd, out int lpdwProcessId);
+
+
+
     }
 }
 
