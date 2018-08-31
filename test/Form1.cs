@@ -25,6 +25,7 @@ namespace test
 {
     public partial class Form1 : Form
     {
+        string nul = "-".ToString();
         string kol = "";
         string fileName = @"Logs\error.txt";
         string l1 = "LogServer.txt";
@@ -126,7 +127,7 @@ namespace test
         }
 
         public List<string[]> data;
-      
+        public List<string[]> data2;
         public void UploadProductsListFromDB() // Выгрузка списка продуктов в таблицу
         {
 
@@ -186,10 +187,14 @@ namespace test
       + "Initial Catalog=TambovSFKPlant;"
       + "User Id=ASUTPsqlUserR;"
       + "Password =Asutp2016ROnly;";
-
+            //       " + " and w.[ToDestination_ID] in(130,131)   and w.[ToDestination_ID] in(" + idp.Text + ")
             string queryString = "SELECT  [Synonym].[description],w.[Synonym_ID],w.[id],w.[Position_ID],w.[netWeight],w.[itemCount],w.[palletizingTime]" +
         "FROM[TambovSFKPlant].[dbo].[Pallet] AS w INNER JOIN Synonym ON w.Synonym_ID=Synonym.[id]" +
-       "where w.[Position_ID] in(130,131)" + " and w.[ToDestination_ID] in(130,131) order by [Synonym].[description] ";
+      // "where w.[Position_ID] in("+idp.Text+ ") order by [Synonym].[description] ";
+           " left join [TambovSFKPlant].[dbo].[Destination] on [Destination].[id] = w.[ToDestination_ID]"+
+  "where w.[Position_ID] = w.[ToDestination_ID] and [Destination].[Area_ID] = 80 order by [Synonym].[description] ";
+
+
             using (SqlConnection myConnection = new SqlConnection(connectionString)) // Параметры соединения
             {
 
@@ -244,6 +249,72 @@ namespace test
                 label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
                 label2.Text = "Количество паллет прошедшие инвентаризацию: " + dataGridView2.RowCount.ToString();
                  
+            }
+        }
+
+        public void UploadProductsListFromDB2() // Выгрузка списка продуктов в таблицу
+        {
+
+     
+            string connectionString =
+       "Data Source=MBN01_sfkdb01;"
+      + "Initial Catalog=TambovSFKPlant;"
+      + "User Id=ASUTPsqlUserR;"
+      + "Password =Asutp2016ROnly;";
+            //       " + " and w.[ToDestination_ID] in(130,131)   and w.[ToDestination_ID] in(" + idp.Text + ")
+            string queryString = "SELECT  [Synonym].[description],w.[Synonym_ID],w.[id],w.[Position_ID],w.[netWeight],w.[itemCount],w.[palletizingTime]" +
+        "FROM[TambovSFKPlant].[dbo].[Pallet] AS w INNER JOIN Synonym ON w.Synonym_ID=Synonym.[id]" +
+           // "where w.[Position_ID] in("+idp.Text+ ") order by [Synonym].[description] ";
+           " left join [TambovSFKPlant].[dbo].[Destination] on [Destination].[id] = w.[ToDestination_ID]" +
+  "where w.[Position_ID] = w.[ToDestination_ID] and [Destination].[Area_ID] = 80 and w.[id] in(" + label6.Text + ")  order by [Synonym].[description] ";
+
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Параметры соединения
+            {
+
+                SqlCommand command = new SqlCommand(queryString, myConnection);
+                try
+                {
+
+
+                    myConnection.Open();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                finally
+                {
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    //  List<string[]> data1 = new List<string[]>();
+                    //List<string[]> data = new List<string[]>();
+                    data2 = new List<string[]>();
+                    //data1.Clear();
+                    while (reader.Read())
+                    {
+                        data2.Add(new string[7]);
+
+                        data2[data2.Count - 1][0] = reader[0].ToString();
+                        data2[data2.Count - 1][1] = reader[1].ToString();
+                        data2[data2.Count - 1][2] = reader[2].ToString();
+                        data2[data2.Count - 1][3] = reader[3].ToString();
+                        data2[data2.Count - 1][4] = reader[4].ToString();
+                        data2[data2.Count - 1][5] = reader[5].ToString();
+                        data2[data2.Count - 1][6] = reader[6].ToString();
+                    }
+
+                    reader.Close();
+
+                    myConnection.Close();
+
+                    foreach (string[] s in data2)
+                        dataGridView2.Rows.Add(s);
+                }
+                data2.Clear();
+
+
             }
         }
 
@@ -554,9 +625,12 @@ namespace test
                         byte[] data1 = Encoding.Unicode.GetBytes(u);
                         clientStream.Write(data1, 0, data1.Length);
                         save();
+                       
+                       
+                        stopServer();
+                        WriteToXlsx();
                         cleralist();
                         SaveSettings();
-                        stopServer();
                         //txtTalk.AppendText("----Инвентаризация №:" + count1+" завершина----");
                         zapros.Enabled = true;
                         count_green = 0;
@@ -564,7 +638,7 @@ namespace test
                         label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
                         label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
                         label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
-                        WriteToXlsx();
+                       
                     }
                     else {
                        
@@ -621,8 +695,7 @@ namespace test
                                     object[] items = new object[row.Cells.Count];
                                     for (int i1 = 0; i1 < row.Cells.Count; i1++)
                                     {
-                                        items[i1] = row.Cells[i1].Value;
-
+                                        items[i1] = row.Cells[i1].Value.ToString();
 
                                     }
                                     dataGridView2.Rows.Add(items);
@@ -662,7 +735,10 @@ namespace test
                             }
                             else
                             {
-                                dataGridView2.Rows.Add(null, null, label6.Text);
+                               /////////////////
+                              
+                                dataGridView2.Rows.Add(zero.Text, zero.Text, label6.Text, zero.Text, zero.Text, zero.Text, zero.Text);
+
                                 for (int j = 0; j <= dataGridView2.RowCount - 1; j++)
                                 {
                                     if (dataGridView2.Rows[j].Cells[2].Value != null && dataGridView2.Rows[j].Cells[2].Value.ToString() == label6.Text)
@@ -852,7 +928,7 @@ namespace test
                 {
                     if (j == 3 || j == 4)
                     {
-                        M = Convert.ToDouble(dataGridView2.Rows[i].Cells[j].Value);
+                        M = Convert.ToDouble(dataGridView2.Rows[i].Cells[j].Value.ToString());
                         ExcelWorkSheet.Cells[i + 2, j + 1] = M;
                     }
                     else if (j == 14)
@@ -860,8 +936,8 @@ namespace test
                         M = Convert.ToDouble(dataGridView2.Rows[i].Cells[j].Value);
                         ExcelWorkSheet.Cells[i + 2, j + 1] = M;
                     }
-                    else
-                        ExcelWorkSheet.Cells[i + 2, j + 1] = dataGridView2.Rows[i].Cells[j].Value.ToString();
+                 else
+                       ExcelWorkSheet.Cells[i + 2, j + 1] = dataGridView2.Rows[i].Cells[j].Value.ToString();
                 }
             }
 

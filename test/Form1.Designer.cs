@@ -47,6 +47,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.zero = new System.Windows.Forms.TextBox();
+            this.idp = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.plMain = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -185,6 +187,7 @@
             this.btStopServer.TabIndex = 5;
             this.btStopServer.Text = "StopServer";
             this.btStopServer.UseVisualStyleBackColor = true;
+            this.btStopServer.Visible = false;
             this.btStopServer.Click += new System.EventHandler(this.btStopServer_Click);
             // 
             // label8
@@ -209,6 +212,7 @@
             this.btStartServer.TabIndex = 4;
             this.btStartServer.Text = "StartServer";
             this.btStartServer.UseVisualStyleBackColor = true;
+            this.btStartServer.Visible = false;
             this.btStartServer.Click += new System.EventHandler(this.btStartServer_Click);
             // 
             // label9
@@ -238,11 +242,12 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 4;
+            this.tableLayoutPanel3.ColumnCount = 5;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Controls.Add(this.zapros, 0, 0);
@@ -251,6 +256,8 @@
             this.tableLayoutPanel3.Controls.Add(this.label4, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.label12, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.button1, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.zero, 3, 1);
+            this.tableLayoutPanel3.Controls.Add(this.idp, 4, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
@@ -295,7 +302,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 26);
             this.label6.TabIndex = 10;
-            this.label6.Text = "**************";
+            this.label6.Text = "568225";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label4
@@ -323,14 +330,33 @@
             // 
             // button1
             // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(356, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 20);
+            this.button1.Size = new System.Drawing.Size(100, 20);
             this.button1.TabIndex = 12;
             this.button1.Text = "Эксель";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // zero
+            // 
+            this.zero.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.zero.Location = new System.Drawing.Point(356, 29);
+            this.zero.Name = "zero";
+            this.zero.Size = new System.Drawing.Size(100, 22);
+            this.zero.TabIndex = 13;
+            this.zero.Text = "-1";
+            this.zero.Visible = false;
+            // 
+            // idp
+            // 
+            this.idp.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.idp.Location = new System.Drawing.Point(462, 29);
+            this.idp.Name = "idp";
+            this.idp.Size = new System.Drawing.Size(112, 22);
+            this.idp.TabIndex = 14;
             // 
             // label7
             // 
@@ -517,7 +543,7 @@
             // 
             // Column11
             // 
-            this.Column11.HeaderText = "Паллеты";
+            this.Column11.HeaderText = "Позиция";
             this.Column11.Name = "Column11";
             this.Column11.ReadOnly = true;
             // 
@@ -640,6 +666,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox zero;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
@@ -647,7 +675,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column13;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox idp;
     }
 }
 
