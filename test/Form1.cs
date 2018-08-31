@@ -25,6 +25,7 @@ namespace test
 {
     public partial class Form1 : Form
     {
+        string kol = "";
         string fileName = @"Logs\error.txt";
         string l1 = "LogServer.txt";
         string f1 = @"Logs\LogServer.txt";
@@ -650,7 +651,8 @@ namespace test
 
                                 }
                                 label1.Text = "Количество паллет для инвентаризации: " + dataGridView1.RowCount.ToString();
-                                u = "ДА" + "," + label6.Text + "," + count_green + "," + count_red+","+count;
+                                kol = dataGridView1.RowCount.ToString();
+                                u = "ДА" + "," + label6.Text + "," + count_green + "," + count_red+","+ kol;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
                                // txtTalk.AppendText("-->Отправлено: Паллет в списке_ "+"из: "+count_green);
@@ -668,7 +670,8 @@ namespace test
                                 count_red++;
                                 label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
                                 //  listBox1.Items.Add(textBox2.Text);
-                                u = "НЕТ" + "," + label6.Text + "," + count_green + "," + count_red + "," + count;
+                                kol = dataGridView1.RowCount.ToString();
+                                u = "НЕТ" + "," + label6.Text + "," + count_green + "," + count_red + "," + kol;
                                 byte[] data1 = Encoding.Unicode.GetBytes(u);
                                 clientStream.Write(data1, 0, data1.Length);
                              //   txtTalk.AppendText("-->Отправлено: Паллет не в списке_ " + "из: " + count_red);
