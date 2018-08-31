@@ -564,6 +564,7 @@ namespace test
                         label1.Text = "Количество паллет инвентаризации: " + dataGridView1.RowCount.ToString();
                         label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
                         label2.Text = "Количество паллет прошедшие инвентаризацию: " + count_green;
+                        WriteToXlsx();
                     }
                     else {
                        

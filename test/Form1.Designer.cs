@@ -46,6 +46,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.plMain = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -70,7 +71,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.txtTalk = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -103,6 +103,7 @@
             this.button4.TabIndex = 13;
             this.button4.Text = "button4";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
@@ -113,6 +114,7 @@
             this.button3.TabIndex = 12;
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // btback
@@ -318,6 +320,17 @@
             this.label12.TabIndex = 11;
             this.label12.Text = "**************";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(356, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 20);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "Эксель";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label7
             // 
@@ -559,16 +572,6 @@
             this.txtTalk.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTalk.Size = new System.Drawing.Size(1160, 10);
             this.txtTalk.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(356, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 20);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
