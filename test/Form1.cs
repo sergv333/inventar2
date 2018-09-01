@@ -266,7 +266,7 @@ namespace test
         "FROM[TambovSFKPlant].[dbo].[Pallet] AS w INNER JOIN Synonym ON w.Synonym_ID=Synonym.[id]" +
            // "where w.[Position_ID] in("+idp.Text+ ") order by [Synonym].[description] ";
            " left join [TambovSFKPlant].[dbo].[Destination] on [Destination].[id] = w.[ToDestination_ID]" +
-  "where w.[Position_ID] = w.[ToDestination_ID] and [Destination].[Area_ID] = 80 and w.[id] in(" + label6.Text + ")  order by [Synonym].[description] ";
+  "where w.[id] in(" + label6.Text + ")  order by [Synonym].[description] ";
 
 
             using (SqlConnection myConnection = new SqlConnection(connectionString)) // Параметры соединения
@@ -296,7 +296,7 @@ namespace test
                     {
                         data2.Add(new string[7]);
 
-                        data2[data2.Count - 1][0] = reader[0].ToString();
+                        data2[data2.Count - 1][0] = "(-1) "+reader[0].ToString();
                         data2[data2.Count - 1][1] = reader[1].ToString();
                         data2[data2.Count - 1][2] = reader[2].ToString();
                         data2[data2.Count - 1][3] = reader[3].ToString();
@@ -351,6 +351,7 @@ namespace test
 
            // txtTalk.AppendText("----Создан запрос на инвентаризацию №: "+count +" " + label1.Text + ": Пользователь: " + WindowsIdentity.GetCurrent().Name+"----");
         }
+        string c = "(-1)";//начало ШК ,для сравнения
         public string w ="";
         public string _s1 = "link/Profiles.xml";
         public string _s2 = "link/Profiles2.xml";
@@ -366,15 +367,17 @@ namespace test
 
             foreach (Profile prof in ProfileList)
             {
-                _dgv.Rows.Add(new object[] { prof.description, prof.Synonym_ID, prof.id_Pallet, prof.Position_ID, prof.netWeight, prof.itemCount, prof.palletizingTime });
+               
+               
+                    _dgv.Rows.Add(new object[] { prof.description, prof.Synonym_ID, prof.id_Pallet, prof.Position_ID, prof.netWeight, prof.itemCount, prof.palletizingTime });
     //             dataGridView2.Rows[0].DefaultCellStyle.BackColor = Color.GreenYellow;
             }
             for (int i = 0; i <= _dgv.Rows.Count - 1; i++)
             { //  for (int j = 0; j <= dataGridView2.ColumnCount - 1; j++)
 
-                if (_dgv.Rows[i].Cells[1].Value.ToString() ==w )
+                if (_dgv.Rows[i].Cells[0].Value.ToString().StartsWith(c) )
                 {
-                    _dgv.Rows[i].DefaultCellStyle.BackColor = Color.Red;
+                  _dgv.Rows[i].DefaultCellStyle.BackColor = Color.Red;
                     count_red++;
                     label7.Text = "Количество паллет не прошедшие инвентаризацию: " + count_red;
                 }
@@ -735,13 +738,15 @@ namespace test
                             }
                             else
                             {
-                               /////////////////
-                              
-                                dataGridView2.Rows.Add(zero.Text, zero.Text, label6.Text, zero.Text, zero.Text, zero.Text, zero.Text);
+                                b = false;
+                                /////////////////
+                               UploadProductsListFromDB2();
+                              //  dataGridView2.Rows.Add(zero.Text, zero.Text, label6.Text, zero.Text, zero.Text, zero.Text, zero.Text);
 
                                 for (int j = 0; j <= dataGridView2.RowCount - 1; j++)
                                 {
-                                    if (dataGridView2.Rows[j].Cells[2].Value != null && dataGridView2.Rows[j].Cells[2].Value.ToString() == label6.Text)
+                                    // if (dataGridView2.Rows[j].Cells[2].Value != null && dataGridView2.Rows[j].Cells[2].Value.ToString() == label6.Text)
+                                    if (b==false && dataGridView2.Rows[j].Cells[2].Value.ToString() == label6.Text)
                                     { dataGridView2.Rows[j].DefaultCellStyle.BackColor = Color.Red; }
                                 }
                                 count_red++;
@@ -859,6 +864,8 @@ namespace test
         {
             save_Click(dataGridView1, _s1);
             save_Click(dataGridView2, _s2);
+          //  Dispose();
+            Application.Exit();
         }
 
         private void Form1_Load(object sender, EventArgs e)

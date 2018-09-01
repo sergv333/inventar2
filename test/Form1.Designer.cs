@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel1 = new System.Windows.Forms.Panel();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -302,7 +303,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 26);
             this.label6.TabIndex = 10;
-            this.label6.Text = "568225";
+            this.label6.Text = "******";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label4
@@ -357,6 +358,7 @@
             this.idp.Name = "idp";
             this.idp.Size = new System.Drawing.Size(112, 22);
             this.idp.TabIndex = 14;
+            this.idp.Visible = false;
             // 
             // label7
             // 
@@ -608,9 +610,10 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.plMain);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "инвентаризация паллет";
+            this.Text = "Инвентаризация (склад свежего мяса)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
